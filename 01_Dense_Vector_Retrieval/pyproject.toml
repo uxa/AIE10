@@ -12,8 +12,15 @@ dependencies = [
     "langchain-qdrant>=1.0.0",
     "langchain-text-splitters>=1.0.0",
     "pypdf>=6.0.0",
+    "ipywidgets>=8.0.0",
+    "nltk>=3.9.0",
     "qdrant-client>=1.15.0",
 ]
 
 [tool.uv]
 package = false
+
+[[tool.uv.index]]
+name = "sstp"
+url = "https://sstp.jfrog.io/artifactory/api/pypi/pypi/simple"
+default = true

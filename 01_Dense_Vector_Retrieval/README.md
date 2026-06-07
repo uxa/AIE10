@@ -69,7 +69,7 @@ Why is cosine similarity useful for dense vector retrieval?
 
 ##### ✅ Answer:
 
----
+Cosine similarity is useful for dense vector retrieval because it measures the cosine of the angle between two vectors, which indicates how similar their directions are regardless of their magnitude. This is particularly useful in information retrieval because it focuses on the orientation of the vectors rather than their absolute values, making it effective for comparing documents or queries in high-dimensional spaces.
 
 ## 🏗️ Activity #2: Build the Vector RAG Pipeline
 
@@ -88,11 +88,15 @@ Why is metadata important for a RAG application?
 
 ##### ✅ Answer:
 
+Metadata is important for a RAG application because it provides additional context about the retrieved chunks, which can help in filtering and ranking the results. It can also be used to provide more detailed information about the source of the retrieved chunks, which can be useful for the user.
+
 #### ❓Question #3
 
 What tradeoff do we make when choosing chunk size and chunk overlap?
 
 ##### ✅ Answer:
+
+When choosing chunk size and chunk overlap, we make a tradeoff between retrieval quality and computational efficiency. Larger chunks can capture more context but may include irrelevant information, while smaller chunks may miss important context. Overlap helps maintain context continuity but increases storage and retrieval costs.
 
 #### ❓Question #4
 
@@ -100,7 +104,8 @@ What does a similarity score help you understand, and what does it not prove by 
 
 ##### ✅ Answer:
 
----
+The similarity score helps you understand how closely the retrieved chunk matches the query in terms of vector space distance. It provides a quantitative measure of relevance, allowing you to rank and filter results. However, it does not prove the factual accuracy or completeness of the retrieved information, nor does it guarantee that the context is sufficient for generating a correct answer. It is a heuristic measure that should be used in conjunction with other evaluation methods to assess retrieval quality.
+
 
 ## 🏗️ Activity #3: Vibe Check Retrieval Quality
 
@@ -115,7 +120,8 @@ For the vibe check queries, did the retrieved context seem relevant before gener
 
 ##### ✅ Answer:
 
----
+Yes, the retrieved context seemed relevant before generation because the similarity scores were high and the chunks contained information related to the queries. However, the context was not always sufficient to generate a complete and accurate answer, as some queries required more specific information that was not present in the retrieved chunks.
+
 
 ## 🏗️ Activity #4: Tune Retrieval
 
@@ -130,13 +136,24 @@ Document what changed and whether retrieval improved.
 
 ##### Settings Changed:
 
--
+- Replaced the `RecursiveCharacterTextSplitter` with `NLTKTextSplitter`
+- Reduced chunk size from 1000 to 500
+- Increased chunk overlap from 200 to 100
+- Increased retrieval `k` from 4 to 6
 
 ##### Results:
 
-1.
-2.
-3.
+| Config | Splitter | Chunk | Overlap | k | Chunks | Avg Score | Spread | Noisy |
+|--------|----------|-------|---------|---|--------|-----------|--------|-------|
+| Baseline | `recursive` | 1000 | 200 | 4 | 135 | 0.568 | 0.031 | 0/4 |
+| Run 2 | `nltk` | 1000 | 200 | 4 | 135 | 0.586 | 0.026 | 0/4 |
+| Run 3 | `nltk` | 500 | 100 | 6 | 271 | 0.569 | 0.024 | 0/6 |
+
+1. **Switching to `NLTKTextSplitter` at the same chunk size (1000) improved avg similarity from 0.568 → 0.586** and tightened the score spread from 0.031 → 0.026. NLTK's sentence-aware boundaries kept semantically complete sentences together, producing more focused chunks that matched the query more consistently.
+
+2. **Reducing chunk size to 500 with k=6 brought avg score back down to 0.569** — smaller chunks are more granular but each one covers less topic area, so individual match quality dropped slightly. The benefit was broader coverage: 6 sources from more pages of the PDF gave the LLM more angles to synthesize the answer from.
+
+3. **All 3 runs had 0 noisy chunks (all scores above 0.45)**, confirming the query was a strong match for this document regardless of configuration. The best overall retrieval quality was Run 2 (NLTK, chunk=1000, k=4): highest avg score, lowest spread, and fewer API calls than k=6.
 
 ---
 

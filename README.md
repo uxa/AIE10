@@ -60,7 +60,7 @@ It's easy to find your way around in our course within the Discord community:
   - No spamming (text or voice) or screaming in voice chat
   - Use push-to-talk if you have background noise
   - No explicit NSFW content (porn, gore, etc.) in text, music bots, attachments/links, or profile pictures
-  - If you’re unsure whether something violates the rules, DM anyone with a `⚡AIM` tag on their Discord profile to verify
+  - If you're unsure whether something violates the rules, DM anyone with a `⚡AIM` tag on their Discord profile to verify
   - No harassment, bullying, slurs, or aggressive behavior
 
   </div>
@@ -93,4 +93,3 @@ We believe in the power of collaboration. Contributions, ideas, and feedback are
 Please reach out to `jacob@aimakerspace.io` with any questions or suggestions.
 
 Keep building, shipping, and sharing, and we'll do the same 🏗️🚢🚀
-
