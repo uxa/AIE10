@@ -4,7 +4,7 @@ version = "0.1.0"
 description = "Session 2 agentic RAG notebooks for AI Makerspace."
 requires-python = ">=3.12"
 dependencies = [
-    "ipykernel>=6.29.0",
+    "ipykernel>=6.29.0,<7.0.0",
     "jupyterlab>=4.2.0",
     "langchain>=1.0.0,<2.0.0",
     "langchain-community>=0.4.0",
@@ -17,3 +17,8 @@ dependencies = [
 
 [tool.uv]
 package = false
+
+[[tool.uv.index]]
+name = "sstp"
+url = "https://sstp.jfrog.io/artifactory/api/pypi/pypi/simple"
+default = true
