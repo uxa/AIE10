@@ -14,8 +14,14 @@ dependencies = [
     "networkx>=3.5.0,<4.0.0",
     "numpy>=2.0.0,<3.0.0",
     "pydantic>=2.12.0,<3.0.0",
+    "python-dotenv>=1.0.0",
     "qdrant-client>=1.15.0,<2.0.0",
 ]
 
 [tool.uv]
 package = false
+
+[[tool.uv.index]]
+name = "sstp"
+url = "https://sstp.jfrog.io/artifactory/api/pypi/pypi/simple"
+default = true
