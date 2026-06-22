@@ -25,7 +25,14 @@ dependencies = [
     "rapidfuzz>=3.14.0,<4.0.0",
     "qdrant-client>=1.15.0,<2.0.0",
     "requests>=2.32.0,<3.0.0",
+    "python-dotenv>=1.0.0",
 ]
 
 [tool.uv]
 package = false
+
+[[tool.uv.index]]
+name = "sstp"
+url = "https://sstp.jfrog.io/artifactory/api/pypi/pypi/simple"
+default = true
+
