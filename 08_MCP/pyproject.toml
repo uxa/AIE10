@@ -15,3 +15,9 @@ dependencies = [
     "dotenv>=0.9.9",
     "ipykernel>=7.2.0",
 ]
+
+[[tool.uv.index]]
+name = "sstp"
+url = "https://sstp.jfrog.io/artifactory/api/pypi/pypi/simple"
+default = true
+
