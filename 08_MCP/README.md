@@ -40,6 +40,7 @@ Available MCP tools:
 
 - `list_products`
 - `get_product`
+- `search_products`
 - `add_to_cart`
 - `view_cart`
 - `remove_from_cart`
@@ -155,7 +156,9 @@ Why is OAuth important for MCP servers, and what security considerations should 
 
 #### Answer
 
-_(insert your answer here)_
+OAuth matters because MCP tools often act on a user's behalf, so the server needs delegated, scoped access instead of a shared secret or hard-coded credential. It lets the client authenticate the user, issue short-lived tokens, and limit what the model can do with least privilege.
+
+When exposing tools to AI clients, you should still treat every tool call as untrusted input. Validate parameters, keep scopes narrow, require explicit confirmation for destructive actions like checkout or deletes, verify redirect URIs, and assume prompt injection or tool misuse can happen if the model is given access to sensitive actions.
 
 ### Question #2
 
@@ -163,11 +166,17 @@ What is Streamable HTTP transport in MCP, and why might you expose a server publ
 
 #### Answer
 
-_(insert your answer here)_
+Streamable HTTP is MCP over HTTP, which makes the server reachable from remote clients while still supporting the MCP protocol over a network-friendly transport. It is a better fit when the client is not running on the same machine as the server or when you want a hosted integration that can be accessed by a web-based connector.
+
+Public exposure with OAuth makes sense when an external client like ChatGPT needs to discover and use the tools securely over the internet. A local stdio connection is simpler for desktop-only integrations, but it cannot serve a remote client and does not fit a public connector workflow.
 
 ## Activity 1: Extend the MCP Server
 
 Add at least one new tool to the cat shop MCP server (e.g., `search_products`, `update_cart_quantity`, or `get_order_history`). Ensure the new tool integrates properly with the existing database and OAuth authentication. Demo the new tool through an MCP client and include it in your Loom video.
+
+Implemented: `search_products`
+
+Use it to search the catalog by keyword, optionally filter by category, and require authenticated access through the existing OAuth flow.
 
 ## Advanced Activity: Build a Custom MCP Client
 

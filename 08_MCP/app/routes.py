@@ -4,6 +4,8 @@ import time
 from html import escape
 
 from mcp.server.auth.provider import construct_redirect_uri
+from mcp.server.auth.routes import build_metadata
+from mcp.server.auth.json_response import PydanticJSONResponse
 from starlette.requests import Request
 from starlette.responses import HTMLResponse, RedirectResponse, Response
 
@@ -141,6 +143,24 @@ LOGIN_PAGE_HTML = """<!DOCTYPE html>
     </div>
 </body>
 </html>"""
+
+
+@mcp.custom_route("/.well-known/openid-configuration", methods=["GET", "OPTIONS"])
+async def openid_configuration(request: Request) -> Response:
+    auth_settings = mcp.settings.auth
+    if auth_settings is None:
+        return HTMLResponse("OAuth metadata is not configured.", status_code=500)
+
+    metadata = build_metadata(
+        issuer_url=auth_settings.issuer_url,
+        service_documentation_url=auth_settings.service_documentation_url,
+        client_registration_options=auth_settings.client_registration_options,
+        revocation_options=auth_settings.revocation_options,
+    )
+    return PydanticJSONResponse(
+        content=metadata,
+        headers={"Cache-Control": "public, max-age=3600"},
+    )
 
 
 @mcp.custom_route("/login", methods=["GET", "POST"])
