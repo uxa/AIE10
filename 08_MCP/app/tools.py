@@ -85,7 +85,6 @@ async def search_products(query: str, category: str | None = None, limit: int = 
         for r in rows
     ]
 
-
 @mcp.tool()
 async def add_to_cart(product_id: int, quantity: int = 1) -> dict:
     """Add a product to your shopping cart. If already in cart, quantity is increased."""
@@ -132,6 +131,40 @@ async def view_cart() -> dict:
     ]
     total = round(sum(i["subtotal"] for i in items), 2)
     return {"items": items, "total": total, "item_count": len(items)}
+
+
+@mcp.tool()
+async def update_cart_quantity(product_id: int, quantity: int) -> dict:
+    """Set the quantity of a product already in your cart. Use quantity 0 to remove it."""
+    username = await _get_username()
+    db = await oauth_provider._get_db()
+
+    if quantity < 0:
+        return {"error": "Quantity cannot be negative"}
+
+    if quantity == 0:
+        cursor = await db.execute(
+            "DELETE FROM cart_items WHERE username = ? AND product_id = ?",
+            (username, product_id),
+        )
+        await db.commit()
+        if cursor.rowcount == 0:
+            return {"error": "Item not in cart"}
+        return {"success": True, "message": "Item removed from cart"}
+
+    cursor = await db.execute("SELECT name FROM products WHERE id = ?", (product_id,))
+    product = await cursor.fetchone()
+    if product is None:
+        return {"error": "Product not found"}
+
+    cursor = await db.execute(
+        "UPDATE cart_items SET quantity = ? WHERE username = ? AND product_id = ?",
+        (quantity, username, product_id),
+    )
+    await db.commit()
+    if cursor.rowcount == 0:
+        return {"error": "Item not in cart"}
+    return {"success": True, "message": f"Updated {product[0]} quantity to {quantity}"}
 
 
 @mcp.tool()
