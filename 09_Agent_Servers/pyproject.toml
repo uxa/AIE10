@@ -21,3 +21,8 @@ dependencies = [
     "arxiv>=2.1.0",
     "python-dotenv>=1.2.2",
 ]
+
+[[tool.uv.index]]
+name = "sstp"
+url = "https://sstp.jfrog.io/artifactory/api/pypi/pypi/simple"
+default = true

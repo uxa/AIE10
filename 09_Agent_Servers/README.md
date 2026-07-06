@@ -428,7 +428,9 @@ Why does LangSmith deploy your agent as an API backend only, and why do you stil
 
 #### Answer
 
-_(insert your answer here)_
+LangSmith is a platform for running, tracing, and monitoring agents, so it hosts your compiled LangGraph as an API surface (threads, runs, assistants, streaming) plus the observability that comes with it. It is intentionally headless — it does not bundle or serve UI code, because the agent runtime and the user interface have different scaling, security, and deployment concerns.
+
+You still need Vercel (or any web host) because someone has to serve the HTML/JS/CSS and the secure `/api` proxy that injects the `LANGSMITH_API_KEY` server-side. The frontend is where users actually chat; it talks to the LangSmith deployment URL over the network. Splitting them lets you redeploy the UI without touching the agent, keep the API key out of the browser, and scale each layer independently.
 
 ### Question #2
 
@@ -436,14 +438,38 @@ Why should the LangSmith API key live in a Next.js API route (server-side) inste
 
 #### Answer
 
-_(insert your answer here)_
+Any value shipped to the browser (including `NEXT_PUBLIC_*` vars and anything referenced in client components) is fully visible to end users via view-source or network inspection. If the LangSmith API key were exposed there, anyone could copy it and run arbitrary, billable requests against your deployment.
+
+Putting it in a Next.js API route means the key only ever exists on the server. The browser calls your own `/api/*` passthrough, and that route attaches the key server-side before forwarding to the LangSmith deployment URL. This keeps the secret private, lets you add auth/rate-limiting/logging at the proxy, and follows the general rule that credentials never belong in client-side code.
 
 ## Activity 1: Build a Helpfulness Loop in Production
 
 Build an `agent_with_helpfulness` graph that adds a post-response helpfulness check: after the agent answers, a judge model decides whether the response is helpful, and if not, the graph loops back for another attempt (with a safe loop limit). Register it in `langgraph.json`, deploy it, then compare LangSmith traces for queries that pass vs. fail the helpfulness check. Does the retry loop behave differently in Studio vs. production?
+
+**Implemented:** `app/graphs/agent_with_helpfulness.py`, registered in `langgraph.json` as graph `agent_with_helpfulness` / assistant `helpful_agent`.
+
+The graph flow is:
+
+- `agent` runs the tool-calling model; if it requests tools it routes to `tools` and loops back to `agent`.
+- Once the agent answers without tool calls, a `helpfulness` node bumps an attempt counter, then a judge model grades the answer against the original question (`Y`/`N`).
+- If helpful (or the `MAX_ATTEMPTS` loop limit is hit) the graph ends; otherwise a `retry` node appends a nudge and loops back to `agent`.
+
+The `MAX_ATTEMPTS` cap prevents infinite retry loops. Behavior matches between Studio and production because both run the same compiled graph over the Agent Server API — Studio just adds a debugging/visualization layer on top of the same events.
 
 ## Advanced Activity: Auth and Custom Routes
 
 Research [LangSmith Deployments custom routes](https://github.com/langchain-samples/lsd-custom-route-react-ui) and describe how you could add authentication so each user only sees their own threads. Optionally implement a simple auth gate on your Vercel frontend.
 
 Include your findings and a demo in your Loom video.
+
+#### Findings
+
+LangGraph/LangSmith deployments support custom auth via the `@auth` handlers registered in `langgraph.json` (an `auth` block pointing at an `authenticate`/`authorize` module). The `authenticate` handler validates the incoming credential (e.g. a JWT or session token forwarded by the frontend proxy) and returns an identity; the `authorize` handler then attaches owner metadata and filters resources so each request only touches that user's data.
+
+To scope threads per user:
+
+- Have the `/api` passthrough forward the signed-in user's token (from the frontend auth provider) to the deployment.
+- In `authenticate`, verify the token and return the user id as the identity.
+- In `authorize`, stamp `owner = user_id` on thread/run creation and add a metadata filter (`owner == user_id`) on reads, so listing threads returns only that user's threads.
+
+On the Vercel side, a simple auth gate means putting an auth provider (e.g. NextAuth/Clerk) in front of the chat page, blocking unauthenticated access, and injecting the user's token into the passthrough route server-side (never exposing the LangSmith key). This layers app-level auth on the UI with resource-level isolation enforced by the deployment.
