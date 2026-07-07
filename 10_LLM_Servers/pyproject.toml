@@ -23,4 +23,13 @@ dependencies = [
     "python-dotenv>=1.2.2",
     "langgraph-cli>=0.4.14",
     "langgraph-api>=0.4.28",
+    "python-dotenv>=1.2.2",
+    "ragas>=0.2.0",
+    "langchain-ollama>=0.3.0",
+    "datasets>=3.0.0",
 ]
+
+[[tool.uv.index]]
+name = "sstp"
+url = "https://sstp.jfrog.io/artifactory/api/pypi/pypi/simple"
+default = true
