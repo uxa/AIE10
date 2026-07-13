@@ -1,0 +1,62 @@
+[
+  {
+    "question": "What is a DAG in Apache Airflow?",
+    "ground_truth": "A DAG (Directed Acyclic Graph) is a workflow in Airflow: a collection of tasks with dependencies that has no cycles, describing what runs and in what order."
+  },
+  {
+    "question": "How do I declare that task B should run after task A?",
+    "ground_truth": "Use the bitshift operator: a >> b (or a.set_downstream(b)). With the TaskFlow API, dependencies are inferred when you pass one task's output into another."
+  },
+  {
+    "question": "What is the difference between the scheduler and the executor?",
+    "ground_truth": "The scheduler decides what tasks should run and when (dependency resolution and queuing); the executor determines how and where those queued tasks actually run (locally, Celery workers, or Kubernetes pods)."
+  },
+  {
+    "question": "How do I run Airflow locally using the Astro CLI?",
+    "ground_truth": "Install the Astro CLI, run 'astro dev init' to scaffold a project, then 'astro dev start' to launch Airflow in Docker. The UI is at http://localhost:8080."
+  },
+  {
+    "question": "What does catchup do and how do I disable it?",
+    "ground_truth": "catchup controls whether Airflow backfills all missed intervals since start_date when a DAG is unpaused. Set catchup=False to only run from now forward."
+  },
+  {
+    "question": "What are XComs used for and what is their size limitation?",
+    "ground_truth": "XComs pass small amounts of data between tasks via the metadata database. They are for small values like IDs or paths, not large datasets; store big data externally and pass a reference."
+  },
+  {
+    "question": "Which executor runs each task in its own Kubernetes pod?",
+    "ground_truth": "The KubernetesExecutor launches each task in its own Kubernetes pod, giving per-task isolation and elastic scaling."
+  },
+  {
+    "question": "How can I change the Airflow webserver port if 8080 is already in use?",
+    "ground_truth": "Run 'astro config set webserver.port 8081' and then 'astro dev restart' to use a different port."
+  },
+  {
+    "question": "What is a sensor in Airflow?",
+    "ground_truth": "A sensor is a special operator that waits for a condition to become true (e.g. S3KeySensor waits for a file). Use reschedule mode or deferrable operators for long waits to free the worker."
+  },
+  {
+    "question": "How do I schedule a DAG to run every day at 3 AM?",
+    "ground_truth": "Set schedule to the cron expression '0 3 * * *' (or use a preset like '@daily' for midnight)."
+  },
+  {
+    "question": "Where should I store secrets instead of plaintext Airflow Variables?",
+    "ground_truth": "Store secrets in a secrets backend such as AWS Secrets Manager or HashiCorp Vault rather than plaintext Variables."
+  },
+  {
+    "question": "What is the logical date (execution date) of a DAG run?",
+    "ground_truth": "The logical date represents the start of the data interval the run is responsible for; the run executes after the interval ends, so a daily run for Jan 1 runs after Jan 1 completes."
+  },
+  {
+    "question": "What files does 'astro dev init' create?",
+    "ground_truth": "It scaffolds dags/, a Dockerfile, requirements.txt, packages.txt, plugins/, include/, and airflow_settings.yaml."
+  },
+  {
+    "question": "What is the default trigger rule for a task?",
+    "ground_truth": "The default trigger_rule is all_success, meaning a task runs only when all its upstream tasks have succeeded."
+  },
+  {
+    "question": "What is a hook in Airflow?",
+    "ground_truth": "A hook is a reusable interface to an external system (e.g. PostgresHook, S3Hook); operators use hooks internally and you can call hooks directly inside a task."
+  }
+]
