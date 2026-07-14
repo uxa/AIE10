@@ -3,7 +3,7 @@
 **Project:** Airflow Docs Copilot — an Agentic RAG assistant for Apache Airflow & Astronomer users.
 **Repo:** `00_Docs/Certification Challenge/app`
 **Live demo:** https://aie10challenge.vercel.app/
-**Loom video:** _TODO: paste 10-min demo link_
+**Loom video:** https://www.loom.com/share/11e5a8a1be604c269b50c28f2e5d7237
 
 ---
 
